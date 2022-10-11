@@ -1,0 +1,6 @@
+-r requirements.txt
+pre-commit==2.20.0
+black==21.4b0
+flake8==5.0.4
+isort==5.10.1
+mypy==0.982
