@@ -1,9 +1,11 @@
 """Tests for `todocli` package."""
 
-from todocli import cli
 from typer.testing import CliRunner
 
+from todocli import cli
+
 runner = CliRunner()
+
 
 def test_creation():
     """Tests app creation."""
