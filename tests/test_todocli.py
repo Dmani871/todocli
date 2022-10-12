@@ -21,7 +21,7 @@ def test_version():
 
 
 def test_version_short_opt():
-    """Tests app shows version."""
+    """Tests app shows version shorthand."""
     result = runner.invoke(cli.app, ["-v"])
     assert result.exit_code == 0
     assert f"{__app_name__} v{__version__}\n" in result.stdout
