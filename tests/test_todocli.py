@@ -25,3 +25,10 @@ def test_version_short_opt():
     result = runner.invoke(cli.app, ["-v"])
     assert result.exit_code == 0
     assert f"{__app_name__} v{__version__}\n" in result.stdout
+
+
+def test_version_multiple_opt():
+    """Tests app shows version with multiple flags."""
+    result = runner.invoke(cli.app, ["--help", "-v"])
+    assert result.exit_code == 0
+    assert f"{__app_name__} v{__version__}\n" in result.stdout
