@@ -22,6 +22,7 @@ def main(
         "--version",
         help="Show the application's version and exit.",
         callback=_version_callback,
+        is_eager=True,
     )
 ) -> None:
     return
