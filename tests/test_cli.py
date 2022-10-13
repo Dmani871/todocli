@@ -1,4 +1,4 @@
-"""Tests for `todocli` package."""
+"""Tests for `cli` module."""
 
 from typer.testing import CliRunner
 
