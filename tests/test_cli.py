@@ -1,5 +1,3 @@
-"""Tests for `cli` module."""
-
 from typer.testing import CliRunner
 
 from todocli import __app_name__, __version__, cli
