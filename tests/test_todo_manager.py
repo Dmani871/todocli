@@ -134,3 +134,15 @@ def test_set_todo_done(
 def test_set_todo_done_no_todo(todo_manager):
     todo = todo_manager.set_done(1)
     assert todo == CurrentTodo({}, Code.ID_ERROR)
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_set_remove_todo(
+    todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
+):
+    todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    todo = todo_manager.remove(1)
+    assert todo == CurrentTodo(return_todo, Code.SUCCESS)

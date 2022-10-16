@@ -46,3 +46,10 @@ class TodoManager:
         todo["Done"] = True
         self._write_todos(todos)
         return CurrentTodo(todo, Code.SUCCESS)
+
+    def remove(self, todo_id: int) -> CurrentTodo:
+        """Removes todo."""
+        todos = self.read_todos()
+        todo = todos.pop(todo_id - 1)
+        self._write_todos(todos)
+        return CurrentTodo(todo, Code.SUCCESS)
