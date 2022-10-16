@@ -146,3 +146,8 @@ def test_set_remove_todo(
     todo_manager.add(todo_task, todo_priority, todo_due_date_str)
     todo = todo_manager.remove(1)
     assert todo == CurrentTodo(return_todo, Code.SUCCESS)
+
+
+def test_set_remove_todo_empty(todo_manager):
+    todo = todo_manager.remove(1)
+    assert todo == CurrentTodo({}, Code.ID_ERROR)

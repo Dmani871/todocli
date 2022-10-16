@@ -50,6 +50,9 @@ class TodoManager:
     def remove(self, todo_id: int) -> CurrentTodo:
         """Removes todo."""
         todos = self.read_todos()
-        todo = todos.pop(todo_id - 1)
+        try:
+            todo = todos.pop(todo_id - 1)
+        except IndexError:
+            return CurrentTodo({}, Code.ID_ERROR)
         self._write_todos(todos)
         return CurrentTodo(todo, Code.SUCCESS)
