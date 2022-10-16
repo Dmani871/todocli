@@ -44,3 +44,17 @@ def test_add_todo_returns_type(todo_manager):
     todo_due_date_str = todo_due_date.strftime("%Y-%m-%d")
     todo = todo_manager.add(todo_task, todo_priority, todo_due_date_str)
     assert isinstance(todo, CurrentTodo)
+
+
+def test_add_todo_without_date(todo_manager):
+    faker = Faker()
+    todo_task = faker.sentence()
+    todo_priority = random.randint(1, 3)
+    todo = todo_manager.add(todo_task, todo_priority)
+    return_todo = {
+        "Description": todo_task,
+        "Priority": todo_priority,
+        "Due": None,
+        "Done": False,
+    }
+    assert todo == CurrentTodo(return_todo, Code.SUCCESS)

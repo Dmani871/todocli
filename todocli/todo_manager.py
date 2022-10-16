@@ -3,7 +3,9 @@ from todocli.return_codes import Code
 
 
 class TodoManager:
-    def add(self, description: str, priority: int, due: str):
+    def add(
+        self, description: str, priority: int, due: str = None
+    ) -> CurrentTodo:
         return CurrentTodo(
             {
                 "Description": description,
