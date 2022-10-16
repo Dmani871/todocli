@@ -14,13 +14,15 @@ class TodoManager:
     def add(
         self, description: str, priority: int, due: str = None
     ) -> CurrentTodo:
+        todos = self.read_todos()
         todo_json = {
             "Description": description,
             "Priority": priority,
             "Due": due,
             "Done": False,
         }
-        self._write_todos([todo_json])
+        todos.append(todo_json)
+        self._write_todos(todos)
         return CurrentTodo(
             todo_json,
             Code.SUCCESS,
@@ -29,3 +31,7 @@ class TodoManager:
     def _write_todos(self, todos: list) -> None:
         with self._db_path.open("w") as db:
             json.dump(todos, db, indent=4)
+
+    def read_todos(self) -> list:
+        with self._db_path.open("r") as db:
+            return json.load(db)
