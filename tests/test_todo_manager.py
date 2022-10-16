@@ -1,5 +1,6 @@
 """Tests for `TodoManager` class."""
 
+import json
 import random
 
 import pytest
@@ -17,7 +18,7 @@ def mock_json_file(tmp_path):
 
 
 @pytest.fixture
-def todo_manager():
+def todo_manager(mock_json_file):
     todo_manager = tm.TodoManager(mock_json_file)
     yield todo_manager
 
@@ -96,5 +97,5 @@ def test_todo_saved(
     todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
 ):
     todo_manager.add(todo_task, todo_priority, todo_due_date_str)
-    read = todo_manager.read_todos()
-    assert read == [return_todo]
+    with todo_manager._db_path.open("r") as db:
+        assert list(json.load(db)) == [return_todo]
