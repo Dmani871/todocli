@@ -109,3 +109,10 @@ def test_todo_saved_multiple(todo_manager):
         expected_todos.append(return_todo)
     with todo_manager._db_path.open("r") as db:
         assert list(json.load(db)) == expected_todos
+
+
+def test_list_todos(todo_manager):
+    for todo in generate_todos(10):
+        todo_task, todo_priority, todo_due_date_str, _ = todo
+        todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    assert len(todo_manager.read_todos()) == 10
