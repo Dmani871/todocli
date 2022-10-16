@@ -129,3 +129,8 @@ def test_set_todo_done(
     todo = todo_manager.set_done(1)
     return_todo["Done"] = True
     assert todo == CurrentTodo(return_todo, Code.SUCCESS)
+
+
+def test_set_todo_done_no_todo(todo_manager):
+    todo = todo_manager.set_done(1)
+    assert todo == CurrentTodo({}, Code.ID_ERROR)

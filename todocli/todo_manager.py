@@ -39,7 +39,10 @@ class TodoManager:
     def set_done(self, todo_id: int) -> CurrentTodo:
         """Set a to-do as done."""
         todos = self.read_todos()
-        todo = todos[todo_id - 1]
+        try:
+            todo = todos[todo_id - 1]
+        except IndexError:
+            return CurrentTodo({}, Code.ID_ERROR)
         todo["Done"] = True
         self._write_todos(todos)
         return CurrentTodo(todo, Code.SUCCESS)
