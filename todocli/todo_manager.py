@@ -35,3 +35,11 @@ class TodoManager:
     def read_todos(self) -> list:
         with self._db_path.open("r") as db:
             return json.load(db)
+
+    def set_done(self, todo_id: int) -> CurrentTodo:
+        """Set a to-do as done."""
+        todos = self.read_todos()
+        todo = todos[todo_id - 1]
+        todo["Done"] = True
+        self._write_todos(todos)
+        return CurrentTodo(todo, Code.SUCCESS)

@@ -116,3 +116,16 @@ def test_list_todos(todo_manager):
         todo_task, todo_priority, todo_due_date_str, _ = todo
         todo_manager.add(todo_task, todo_priority, todo_due_date_str)
     assert len(todo_manager.read_todos()) == 10
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_set_todo_done(
+    todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
+):
+    todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    todo = todo_manager.set_done(1)
+    return_todo["Done"] = True
+    assert todo == CurrentTodo(return_todo, Code.SUCCESS)
