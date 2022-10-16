@@ -11,8 +11,14 @@ from todocli.return_codes import Code
 
 
 @pytest.fixture
+def mock_json_file(tmp_path):
+    db_file = tmp_path / "todo.json"
+    return db_file
+
+
+@pytest.fixture
 def todo_manager():
-    todo_manager = tm.TodoManager()
+    todo_manager = tm.TodoManager(mock_json_file)
     yield todo_manager
 
 
@@ -80,3 +86,15 @@ def test_add_multiple_todo(
 ):
     todo = todo_manager.add(todo_task, todo_priority, todo_due_date_str)
     assert todo == CurrentTodo(return_todo, Code.SUCCESS)
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_todo_saved(
+    todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
+):
+    todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    read = todo_manager.read_todos()
+    assert read == [return_todo]
