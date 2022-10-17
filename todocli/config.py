@@ -28,3 +28,13 @@ def _init_config_file(db_path: str):
     except OSError:
         return Code.OS_ERROR
     return Code.SUCCESS
+
+
+def init_app(db_path: str):
+    made_config_files = _make_config_file()
+    if made_config_files is not Code.SUCCESS:
+        return made_config_files
+    init_config = _init_config_file(db_path)
+    if init_config is not Code.SUCCESS:
+        return init_config
+    return Code.SUCCESS

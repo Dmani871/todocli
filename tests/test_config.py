@@ -36,3 +36,10 @@ def test_no_config_created(tmp_path):
     config.CONFIG_FILE_PATH = Path("/") / "config.ini"
     db_path = str(tmp_path / "todo.json")
     assert config._init_config_file(db_path) == Code.OS_ERROR
+
+
+def test_init_app(tmp_path):
+    config.CONFIG_DIR_PATH = tmp_path
+    config.CONFIG_FILE_PATH = tmp_path / "config.ini"
+    db_path = str(tmp_path / "todo.json")
+    assert config.init_app(db_path) == Code.SUCCESS
