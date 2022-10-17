@@ -14,6 +14,7 @@ class TodoManager:
     def add(
         self, description: str, priority: int, due: str = None
     ) -> CurrentTodo:
+        """Add todo."""
         todos = self.read_todos()
         todo_json = {
             "Description": description,
@@ -29,10 +30,12 @@ class TodoManager:
         )
 
     def _write_todos(self, todos: list) -> None:
+        """Writes todos."""
         with self._db_path.open("w") as db:
             json.dump(todos, db, indent=4)
 
     def read_todos(self) -> list:
+        """Reads todos."""
         with self._db_path.open("r") as db:
             return json.load(db)
 
