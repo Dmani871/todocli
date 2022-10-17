@@ -10,6 +10,9 @@ CONFIG_FILE_PATH = CONFIG_DIR_PATH / "config.ini"
 
 
 def _init_config_file():
-    CONFIG_DIR_PATH.mkdir(exist_ok=True)
-    CONFIG_FILE_PATH.touch(exist_ok=True)
+    try:
+        CONFIG_DIR_PATH.mkdir(exist_ok=True)
+        CONFIG_FILE_PATH.touch(exist_ok=True)
+    except OSError:
+        return Code.OS_ERROR
     return Code.SUCCESS
