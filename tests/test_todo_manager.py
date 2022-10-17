@@ -151,3 +151,12 @@ def test_set_remove_todo(
 def test_set_remove_todo_empty(todo_manager):
     todo = todo_manager.remove(1)
     assert todo == CurrentTodo({}, Code.ID_ERROR)
+
+
+def test_remove_todos(todo_manager):
+    for todo in generate_todos(10):
+        todo_task, todo_priority, todo_due_date_str, return_todo = todo
+        todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    assert len(todo_manager.read_todos()) == 10
+    todo_manager.remove_all()
+    assert len(todo_manager.read_todos()) == 0
