@@ -29,3 +29,10 @@ def test_config_file_file_db(tmp_path):
     cfg.read(config.CONFIG_FILE_PATH)
     assert "General" in cfg
     assert cfg["General"] == {"database": db_path}
+
+
+def test_no_config_created(tmp_path):
+    config.CONFIG_DIR_PATH = Path("/")
+    config.CONFIG_FILE_PATH = Path("/") / "config.ini"
+    db_path = str(tmp_path / "todo.json")
+    assert config._init_config_file(db_path) == Code.OS_ERROR
