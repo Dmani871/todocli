@@ -8,6 +8,7 @@ from todocli.return_codes import Code
 
 CONFIG_DIR_PATH = Path(typer.get_app_dir(__app_name__))
 CONFIG_FILE_PATH = CONFIG_DIR_PATH / "config.ini"
+CONFIG_SETUP = False
 
 
 def _make_config_file():
@@ -38,3 +39,9 @@ def init_app(db_path: str):
     if init_config is not Code.SUCCESS:
         return init_config
     return Code.SUCCESS
+
+
+def get_db_path() -> str:
+    cfg = configparser.ConfigParser()
+    cfg.read(CONFIG_FILE_PATH)
+    return cfg["General"]["database"]

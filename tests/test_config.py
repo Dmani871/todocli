@@ -43,3 +43,15 @@ def test_init_app(tmp_path):
     config.CONFIG_FILE_PATH = tmp_path / "config.ini"
     db_path = str(tmp_path / "todo.json")
     assert config.init_app(db_path) == Code.SUCCESS
+    cfg = configparser.ConfigParser()
+    cfg.read(config.CONFIG_FILE_PATH)
+    assert "General" in cfg
+    assert cfg["General"] == {"database": db_path}
+
+
+def test_read_db_path(tmp_path):
+    config.CONFIG_DIR_PATH = tmp_path
+    config.CONFIG_FILE_PATH = tmp_path / "config.ini"
+    db_path = str(tmp_path / "todo.json")
+    assert config.init_app(db_path) == Code.SUCCESS
+    assert config.get_db_path() == db_path
