@@ -29,7 +29,7 @@ def init(
     app_init_error = config.init_app(db_path)
     if app_init_error != Code.SUCCESS:
         typer.secho(
-            f'Creating config file failed with "{app_init_error}"',
+            f'Creating config file failed with "{app_init_error.value}"',
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)

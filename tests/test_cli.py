@@ -41,10 +41,19 @@ def test_version_multiple_opt():
     assert f"{__app_name__} v{__version__}\n" in result.stdout
 
 
-def test_init_db(mock_json_file):
+def test_init(mock_json_file):
     result = runner.invoke(cli.app, ["init"], input=f"{mock_json_file}\n")
     assert result.exit_code == 0
     assert f'The to-do database is "{mock_json_file}"' in result.stdout
     cfg = configparser.ConfigParser()
     cfg.read(config.CONFIG_FILE_PATH)
     assert cfg["General"]["database"] == str(mock_json_file)
+
+
+def test_init_invalid_filepath():
+    result = runner.invoke(cli.app, ["init"], input="/\n")
+    assert result.exit_code == 1
+    assert (
+        'Creating config file failed with "An OS ERROR has occured"'
+        in result.stdout
+    )
