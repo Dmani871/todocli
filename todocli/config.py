@@ -1,14 +1,11 @@
 import configparser
 from pathlib import Path
 
-import typer
-
-from todocli import __app_name__
 from todocli.return_codes import Code
 
-CONFIG_DIR_PATH = Path(typer.get_app_dir(__app_name__))
+CONFIG_DIR_PATH = Path.cwd()
 CONFIG_FILE_PATH = CONFIG_DIR_PATH / "config.ini"
-CONFIG_SETUP = False
+DEFAULT_DB_FILE_PATH = CONFIG_DIR_PATH / "todo.json"
 
 
 def _make_config_file():

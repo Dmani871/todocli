@@ -1,9 +1,11 @@
 """This module provides the To-Do CLI."""
+from pathlib import Path
 from typing import Optional
 
 import typer
 
-from todocli import __app_name__, __version__
+from todocli import __app_name__, __version__, config
+from todocli.return_codes import Code
 
 app = typer.Typer()
 
@@ -12,6 +14,30 @@ def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"{__app_name__} v{__version__}")
         raise typer.Exit()
+
+
+@app.command()
+def init(
+    db_path: Path = typer.Option(
+        config.DEFAULT_DB_FILE_PATH,
+        "--db-path",
+        "-db",
+        prompt="to-do database location?",
+    ),
+) -> None:
+    """Initialize the to-do database."""
+    app_init_error = config.init_app(db_path)
+    if app_init_error != Code.SUCCESS:
+        typer.secho(
+            f'Creating config file failed with "{app_init_error}"',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
+    else:
+        typer.secho(
+            f'The to-do database is "{db_path}"',
+            fg=typer.colors.GREEN,
+        )
 
 
 @app.callback()
