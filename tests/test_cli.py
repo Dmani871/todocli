@@ -195,3 +195,35 @@ def test_todo_saved_multiple(todo_manager):
             expected_todos.append(return_todo)
     with todo_manager._db_path.open("r") as db:
         assert list(json.load(db)) == expected_todos
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_add_todo_return(
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    with patch("todocli.cli.get_todoer") as mock_requests:
+        mock_requests.return_value = todo_manager
+        result = runner.invoke(
+            cli.app,
+            [
+                "add",
+                todo_task,
+                "--priority",
+                todo_priority,
+                "--due",
+                todo_due_date_str,
+            ],
+        )
+        assert todo_manager.read_todos() == [return_todo]
+        assert result.exit_code == 0
+        assert (
+            f'to-do: "{todo_task}" was added with priority: {todo_priority}'
+            in result.stdout
+        )

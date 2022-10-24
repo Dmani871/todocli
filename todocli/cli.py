@@ -51,7 +51,12 @@ def add(
     due: str = typer.Option(None),
 ) -> None:
     toder = get_todoer()
-    toder.add(description, priority, due)
+    todo, error = toder.add(description, priority, due)
+    typer.secho(
+        f"""to-do: "{todo['Description']}" was added """
+        f"""with priority: {priority}""",
+        fg=typer.colors.GREEN,
+    )
 
 
 @app.callback()
