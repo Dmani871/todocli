@@ -47,7 +47,7 @@ def get_todoer():
 @app.command()
 def add(
     description: str = typer.Argument(...),
-    priority: int = typer.Option(...),
+    priority: int = typer.Option(2, min=1, max=3),
     due: str = typer.Option(...),
 ) -> None:
     toder = get_todoer()

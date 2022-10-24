@@ -45,7 +45,11 @@ def test_version_multiple_opt():
 
 
 def test_init(mock_json_file):
-    result = runner.invoke(cli.app, ["init"], input=f"{mock_json_file}\n")
+    result = runner.invoke(
+        cli.app,
+        ["init"],
+        input=f"{mock_json_file}\n",
+    )
     assert result.exit_code == 0
     assert f'The to-do database is "{mock_json_file}"' in result.stdout
     cfg = configparser.ConfigParser()
@@ -67,7 +71,11 @@ def test_init_invalid_filepath():
     list(generate_todos(1)),
 )
 def test_add_todo(
-    todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
 ):
     with patch("todocli.cli.get_todoer") as mock_requests:
         mock_requests.return_value = todo_manager
@@ -83,3 +91,37 @@ def test_add_todo(
             ],
         )
         assert todo_manager.read_todos() == [return_todo]
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    tuple(generate_todos(1, todo_priority=10))
+    + tuple(generate_todos(0, todo_priority=1)),
+)
+def test_add_todo_priority(
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    with patch("todocli.cli.get_todoer") as mock_requests:
+        mock_requests.return_value = todo_manager
+        result = runner.invoke(
+            cli.app,
+            [
+                "add",
+                todo_task,
+                "--priority",
+                todo_priority,
+                "--due",
+                todo_due_date_str,
+            ],
+        )
+
+        # noqa: E501
+        assert (
+            f"Error: Invalid value for '--priority': {todo_priority} is not in the valid range of 1 to 3."  # noqa: E501
+            in result.stdout
+        )  # noqa: E501
+        assert result.exit_code == 2

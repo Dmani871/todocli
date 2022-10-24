@@ -55,7 +55,7 @@ def test_read_db_path(tmp_path):
     config.CONFIG_FILE_PATH = tmp_path / "config.ini"
     db_path = tmp_path / "todo.json"
     assert config.init_app(db_path) == Code.SUCCESS
-    assert config.get_db_path() == str(db_path)
+    assert config.get_db_path() == db_path
 
 
 def test_init_db(tmp_path):
@@ -63,7 +63,7 @@ def test_init_db(tmp_path):
     config.CONFIG_FILE_PATH = tmp_path / "config.ini"
     db_path = tmp_path / "todo.json"
     assert config.init_app(db_path) == Code.SUCCESS
-    assert config.get_db_path() == str(db_path)
+    assert config.get_db_path() == db_path
     assert config.init_database(db_path) == Code.SUCCESS
     with open(str(db_path)) as db:
         assert json.load(db) == []

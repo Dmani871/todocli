@@ -3,12 +3,14 @@ import random
 from faker import Faker
 
 
-def generate_todos(num, include_due_date=True):
+def generate_todos(num, include_due_date=True, **kwargs):
     faker = Faker()
     for _ in range(num):
-        todo_task = faker.sentence()
-        todo_priority = random.randint(1, 3)
-        todo_due_date = faker.date_this_decade(after_today=True)
+        todo_task = kwargs.get("todo_task", faker.sentence())
+        todo_priority = kwargs.get("todo_priority", random.randint(1, 3))
+        todo_due_date = kwargs.get(
+            "todo_due_date", faker.date_this_decade(after_today=True)
+        )
         todo_due_date_str = (
             todo_due_date.strftime("%Y-%m-%d") if include_due_date else None
         )
