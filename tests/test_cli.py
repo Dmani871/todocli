@@ -123,3 +123,29 @@ def test_add_todo_priority(
             in result.stdout
         )
         assert result.exit_code == 2
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    tuple(generate_todos(1, todo_priority=1)),
+)
+def test_add_todo_priority_default(
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    with patch("todocli.cli.get_todoer") as mock_requests:
+        mock_requests.return_value = todo_manager
+        runner.invoke(
+            cli.app,
+            [
+                "add",
+                todo_task,
+                "--due",
+                todo_due_date_str,
+            ],
+        )
+        return_todo["Priority"] = 2
+        assert todo_manager.read_todos() == [return_todo]
