@@ -118,10 +118,8 @@ def test_add_todo_priority(
                 todo_due_date_str,
             ],
         )
-
-        # noqa: E501
         assert (
             f"Error: Invalid value for '--priority': {todo_priority} is not in the valid range of 1 to 3."  # noqa: E501
             in result.stdout
-        )  # noqa: E501
+        )
         assert result.exit_code == 2
