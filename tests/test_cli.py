@@ -96,7 +96,7 @@ def test_add_todo(
 @pytest.mark.parametrize(
     "todo_task,todo_priority,todo_due_date_str,return_todo",
     tuple(generate_todos(1, todo_priority=10))
-    + tuple(generate_todos(0, todo_priority=1)),
+    + tuple(generate_todos(1, todo_priority=0)),
 )
 def test_add_todo_priority(
     todo_task,
