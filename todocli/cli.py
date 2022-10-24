@@ -48,7 +48,7 @@ def get_todoer():
 def add(
     description: str = typer.Argument(...),
     priority: int = typer.Option(2, min=1, max=3),
-    due: str = typer.Option(...),
+    due: str = typer.Option(None),
 ) -> None:
     toder = get_todoer()
     toder.add(description, priority, due)
