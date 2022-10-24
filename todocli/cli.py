@@ -40,6 +40,20 @@ def init(
         )
 
 
+def get_todoer():
+    pass
+
+
+@app.command()
+def add(
+    description: str = typer.Argument(...),
+    priority: int = typer.Option(...),
+    due: str = typer.Option(...),
+) -> None:
+    toder = get_todoer()
+    toder.add(description, priority, due)
+
+
 @app.callback()
 def main(
     version: Optional[bool] = typer.Option(

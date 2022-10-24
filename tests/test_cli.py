@@ -1,9 +1,12 @@
 import configparser
+from unittest.mock import patch
 
 import pytest
 from typer.testing import CliRunner
 
 from todocli import __app_name__, __version__, cli, config
+
+from .helper import generate_todos
 
 runner = CliRunner()
 
@@ -57,3 +60,26 @@ def test_init_invalid_filepath():
         'Creating config file failed with "An OS ERROR has occured"'
         in result.stdout
     )
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_add_todo(
+    todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
+):
+    with patch("todocli.cli.get_todoer") as mock_requests:
+        mock_requests.return_value = todo_manager
+        runner.invoke(
+            cli.app,
+            [
+                "add",
+                todo_task,
+                "--priority",
+                todo_priority,
+                "--due",
+                todo_due_date_str,
+            ],
+        )
+        assert todo_manager.read_todos() == [return_todo]
