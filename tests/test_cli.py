@@ -1,4 +1,5 @@
 import configparser
+import json
 from unittest.mock import patch
 
 import pytest
@@ -172,3 +173,25 @@ def test_add_todo_wo_due(
         )
         assert result.exit_code == 0
         assert todo_manager.read_todos() == [return_todo]
+
+
+def test_todo_saved_multiple(todo_manager):
+    expected_todos = []
+    with patch("todocli.cli.get_todoer") as mock_requests:
+        mock_requests.return_value = todo_manager
+        for todo in generate_todos(10):
+            todo_task, todo_priority, todo_due_date_str, return_todo = todo
+            runner.invoke(
+                cli.app,
+                [
+                    "add",
+                    todo_task,
+                    "--priority",
+                    todo_priority,
+                    "--due",
+                    todo_due_date_str,
+                ],
+            )
+            expected_todos.append(return_todo)
+    with todo_manager._db_path.open("r") as db:
+        assert list(json.load(db)) == expected_todos
