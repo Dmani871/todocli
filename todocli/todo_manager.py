@@ -42,7 +42,10 @@ class TodoManager:
         """Reads todos."""
         try:
             with self._db_path.open("r") as db:
-                return json.load(db)
+                try:
+                    return DBResponse(json.load(db), Code.SUCCESS)
+                except json.JSONDecodeError:
+                    return DBResponse([], Code.JSON_ERROR)
         except OSError:
             return DBResponse([], Code.DB_READ_ERROR)
 

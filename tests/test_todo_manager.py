@@ -88,14 +88,22 @@ def test_list_todos(todo_manager):
         todo_task, todo_priority, todo_due_date_str, return_todo = todo
         todo_manager.add(todo_task, todo_priority, todo_due_date_str)
         todos.append(return_todo)
-    assert len(todo_manager.read_todos()) == 10
-    assert todo_manager.read_todos() == todos
+    read_todos, _ = todo_manager.read_todos()
+    assert len(read_todos) == 10
+    assert read_todos == todos
 
 
 def test_list_todos_invalid_file(todo_manager):
     todo_manager._db_path = Path("/")
     res = todo_manager.read_todos()
     assert res == tm.DBResponse([], Code.DB_READ_ERROR)
+
+
+def test_list_todos_invalid_json(todo_manager):
+    with todo_manager._db_path.open("w") as f:
+        f.write("[{]")
+    res = todo_manager.read_todos()
+    assert res == tm.DBResponse([], Code.JSON_ERROR)
 
 
 @pytest.mark.parametrize(
@@ -137,6 +145,8 @@ def test_remove_todos(todo_manager):
     for todo in generate_todos(10):
         todo_task, todo_priority, todo_due_date_str, return_todo = todo
         todo_manager.add(todo_task, todo_priority, todo_due_date_str)
-    assert len(todo_manager.read_todos()) == 10
+    read_todos, _ = todo_manager.read_todos()
+    assert len(read_todos) == 10
     todo_manager.remove_all()
-    assert len(todo_manager.read_todos()) == 0
+    read_todos, _ = todo_manager.read_todos()
+    assert len(read_todos) == 0

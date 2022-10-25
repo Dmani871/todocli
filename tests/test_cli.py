@@ -91,7 +91,8 @@ def test_add_todo(
                 todo_due_date_str,
             ],
         )
-        assert todo_manager.read_todos() == [return_todo]
+        read_todos, _ = todo_manager.read_todos()
+        assert read_todos == [return_todo]
         assert result.exit_code == 0
 
 
@@ -150,7 +151,8 @@ def test_add_todo_priority_default(
             ],
         )
         return_todo["Priority"] = 2
-        assert todo_manager.read_todos() == [return_todo]
+        read_todos, _ = todo_manager.read_todos()
+        assert read_todos == [return_todo]
         assert result.exit_code == 0
 
 
@@ -171,8 +173,9 @@ def test_add_todo_wo_due(
             cli.app,
             ["add", todo_task, "--priority", todo_priority],
         )
+        read_todos, _ = todo_manager.read_todos()
+        assert read_todos == [return_todo]
         assert result.exit_code == 0
-        assert todo_manager.read_todos() == [return_todo]
 
 
 def test_todo_saved_multiple(todo_manager):
@@ -201,7 +204,7 @@ def test_todo_saved_multiple(todo_manager):
     "todo_task,todo_priority,todo_due_date_str,return_todo",
     list(generate_todos(1)),
 )
-def test_add_todo_return(
+def test_add_todo_success_return(
     todo_task,
     todo_priority,
     todo_due_date_str,
@@ -221,7 +224,8 @@ def test_add_todo_return(
                 todo_due_date_str,
             ],
         )
-        assert todo_manager.read_todos() == [return_todo]
+        read_todos, _ = todo_manager.read_todos()
+        assert read_todos == [return_todo]
         assert result.exit_code == 0
         assert (
             f'to-do: "{todo_task}" was added with priority: {todo_priority}'

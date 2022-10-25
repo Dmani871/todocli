@@ -10,3 +10,4 @@ class Code(Enum):
         "A database initialization ERORR:Failed to initialise database"
     )
     DB_READ_ERROR = "A database read ERORR:Failed to read from database"
+    JSON_ERROR = "A JSON decode ERORR:Failed to decode json"

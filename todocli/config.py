@@ -1,5 +1,6 @@
 import configparser
 from pathlib import Path
+from typing import Union
 
 from todocli.return_codes import Code
 
@@ -43,10 +44,13 @@ def init_app(db_path: Path):
     return Code.SUCCESS
 
 
-def get_db_path() -> str:
+def get_db_path() -> Union[Path, Code]:
     cfg = configparser.ConfigParser()
     cfg.read(CONFIG_FILE_PATH)
-    return cfg["General"]["database"]
+    try:
+        return Path(cfg["General"]["database"])
+    except KeyError:
+        return Code.CONFIG_READ_ERROR
 
 
 def init_database(db_path: Path) -> Code:
@@ -55,4 +59,4 @@ def init_database(db_path: Path) -> Code:
         db_path.write_text("[]")
         return Code.SUCCESS
     except OSError:
-        return Code.DB_ERROR
+        return Code.DB_INIT_ERROR
