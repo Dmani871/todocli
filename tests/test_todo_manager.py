@@ -1,6 +1,7 @@
 """Tests for `TodoManager` class."""
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -82,10 +83,19 @@ def test_todo_saved_multiple(todo_manager):
 
 
 def test_list_todos(todo_manager):
+    todos = []
     for todo in generate_todos(10):
-        todo_task, todo_priority, todo_due_date_str, _ = todo
+        todo_task, todo_priority, todo_due_date_str, return_todo = todo
         todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+        todos.append(return_todo)
     assert len(todo_manager.read_todos()) == 10
+    assert todo_manager.read_todos() == todos
+
+
+def test_list_todos_invalid_file(todo_manager):
+    todo_manager._db_path = Path("/")
+    res = todo_manager.read_todos()
+    assert res == tm.DBResponse([], Code.DB_READ_ERROR)
 
 
 @pytest.mark.parametrize(
