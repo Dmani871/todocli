@@ -7,8 +7,6 @@ from todocli.return_codes import Code
 
 class TodoManager:
     def __init__(self, db_path: Path) -> None:
-        if not db_path.exists():
-            db_path.write_text("[]")
         self._db_path = db_path
 
     def add(

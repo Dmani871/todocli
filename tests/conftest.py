@@ -11,5 +11,6 @@ def mock_json_file(tmp_path):
 
 @pytest.fixture
 def todo_manager(mock_json_file):
+    mock_json_file.write_text("[]")
     todo_manager = tm.TodoManager(mock_json_file)
     yield todo_manager
