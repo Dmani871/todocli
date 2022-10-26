@@ -70,7 +70,9 @@ class TodoManager:
 
     def remove(self, todo_id: int) -> CurrentTodo:
         """Removes todo."""
-        todos, _ = self.read_todos()
+        todos, read_error = self.read_todos()
+        if read_error != Code.SUCCESS:
+            return CurrentTodo({}, read_error)
         try:
             todo = todos.pop(todo_id - 1)
         except IndexError:
