@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -104,6 +105,20 @@ def test_list_todos_invalid_json(todo_manager):
         f.write("[{]")
     res = todo_manager.read_todos()
     assert res == tm.DBResponse([], Code.JSON_ERROR)
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_add_invalid_file(
+    todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
+):
+    with patch("todocli.todo_manager.TodoManager.read_todos") as mock_requests:
+        mock_requests.return_value = tm.DBResponse([], Code.DB_READ_ERROR)
+        todo = todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+        assert mock_requests.called
+        assert todo == CurrentTodo(return_todo, Code.DB_READ_ERROR)
 
 
 @pytest.mark.parametrize(

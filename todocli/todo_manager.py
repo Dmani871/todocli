@@ -19,13 +19,16 @@ class TodoManager:
         self, description: str, priority: int, due: str = None
     ) -> CurrentTodo:
         """Add todo."""
-        todos, _ = self.read_todos()
         todo_json = {
             "Description": description,
             "Priority": priority,
             "Due": due,
             "Done": False,
         }
+        todos, read_error = self.read_todos()
+        if read_error != Code.SUCCESS:
+            return CurrentTodo(todo_json, read_error)
+
         todos.append(todo_json)
         self._write_todos(todos)
         return CurrentTodo(
