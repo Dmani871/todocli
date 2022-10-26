@@ -94,6 +94,19 @@ def test_list_todos(todo_manager):
     assert read_todos == todos
 
 
+def test_write_todos_valid_file(todo_manager):
+    res = todo_manager._write_todos([])
+    assert res == tm.DBResponse([], Code.SUCCESS)
+    with todo_manager._db_path.open("r") as db:
+        assert list(json.load(db)) == []
+
+
+def test_write_todos_invalid_file(todo_manager):
+    todo_manager._db_path = Path("/")
+    res = todo_manager._write_todos([])
+    assert res == tm.DBResponse([], Code.DB_WRITE_ERROR)
+
+
 def test_list_todos_invalid_file(todo_manager):
     todo_manager._db_path = Path("/")
     res = todo_manager.read_todos()
@@ -119,6 +132,20 @@ def test_add_invalid_file(
         todo = todo_manager.add(todo_task, todo_priority, todo_due_date_str)
         assert mock_requests.called
         assert todo == CurrentTodo(return_todo, Code.DB_READ_ERROR)
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_add_invalid_json(
+    todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
+):
+    with patch("todocli.todo_manager.TodoManager.read_todos") as mock_requests:
+        mock_requests.return_value = tm.DBResponse([], Code.JSON_ERROR)
+        todo = todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+        assert mock_requests.called
+        assert todo == CurrentTodo(return_todo, Code.JSON_ERROR)
 
 
 @pytest.mark.parametrize(

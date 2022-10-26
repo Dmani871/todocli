@@ -36,10 +36,14 @@ class TodoManager:
             Code.SUCCESS,
         )
 
-    def _write_todos(self, todos: list) -> None:
+    def _write_todos(self, todos: list) -> DBResponse:
         """Writes todos."""
-        with self._db_path.open("w") as db:
-            json.dump(todos, db, indent=4)
+        try:
+            with self._db_path.open("w") as db:
+                json.dump(todos, db, indent=4)
+            return DBResponse(todos, Code.SUCCESS)
+        except OSError:
+            return DBResponse([], Code.DB_WRITE_ERROR)
 
     def read_todos(self) -> DBResponse:
         """Reads todos."""

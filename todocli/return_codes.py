@@ -9,5 +9,6 @@ class Code(Enum):
     DB_INIT_ERROR = (
         "A database initialization ERORR:Failed to initialise database"
     )
+    DB_WRITE_ERROR = "A database write ERORR:Failed to write from database"
     DB_READ_ERROR = "A database read ERORR:Failed to read from database"
     JSON_ERROR = "A JSON decode ERORR:Failed to decode json"
