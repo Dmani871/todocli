@@ -138,6 +138,22 @@ def test_add_invalid_file(
     "todo_task,todo_priority,todo_due_date_str,return_todo",
     list(generate_todos(1)),
 )
+def test_add_write_invalid_file(
+    todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
+):
+    with patch(
+        "todocli.todo_manager.TodoManager._write_todos"
+    ) as mock_requests:
+        mock_requests.return_value = tm.DBResponse([], Code.DB_WRITE_ERROR)
+        todo = todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+        assert mock_requests.called
+        assert todo == CurrentTodo(return_todo, Code.DB_WRITE_ERROR)
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
 def test_add_invalid_json(
     todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
 ):

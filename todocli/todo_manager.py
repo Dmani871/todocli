@@ -28,9 +28,10 @@ class TodoManager:
         todos, read_error = self.read_todos()
         if read_error != Code.SUCCESS:
             return CurrentTodo(todo_json, read_error)
-
         todos.append(todo_json)
-        self._write_todos(todos)
+        todos, write_error = self._write_todos(todos)
+        if write_error != Code.SUCCESS:
+            return CurrentTodo(todo_json, write_error)
         return CurrentTodo(
             todo_json,
             Code.SUCCESS,
