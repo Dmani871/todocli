@@ -261,3 +261,19 @@ def test_set_done_read_invalid_file(todo_manager):
         mock_requests.return_value = tm.DBResponse([], Code.DB_READ_ERROR)
         todo = todo_manager.set_done(1)
         assert todo == CurrentTodo({}, Code.DB_READ_ERROR)
+
+
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_set_done_write_invalid_file(
+    todo_task, todo_priority, todo_due_date_str, return_todo, todo_manager
+):
+    todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    with patch(
+        "todocli.todo_manager.TodoManager._write_todos"
+    ) as mock_requests:
+        mock_requests.return_value = tm.DBResponse([], Code.DB_WRITE_ERROR)
+        todo = todo_manager.set_done(1)
+        assert todo == CurrentTodo({}, Code.DB_WRITE_ERROR)

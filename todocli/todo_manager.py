@@ -67,7 +67,9 @@ class TodoManager:
         except IndexError:
             return CurrentTodo({}, Code.ID_ERROR)
         todo["Done"] = True
-        self._write_todos(todos)
+        todos, write_error = self._write_todos(todos)
+        if write_error != Code.SUCCESS:
+            return CurrentTodo({}, write_error)
         return CurrentTodo(todo, Code.SUCCESS)
 
     def remove(self, todo_id: int) -> CurrentTodo:
