@@ -247,3 +247,10 @@ def test_remove_all_write(todo_manager):
         mock_requests.return_value = tm.DBResponse([], Code.DB_WRITE_ERROR)
         todo = todo_manager.remove_all()
         assert todo == CurrentTodo({}, Code.DB_WRITE_ERROR)
+
+
+def test_set_done_invalid_json(todo_manager):
+    with patch("todocli.todo_manager.TodoManager.read_todos") as mock_requests:
+        mock_requests.return_value = tm.DBResponse([], Code.JSON_ERROR)
+        todo = todo_manager.set_done(1)
+        assert todo == CurrentTodo({}, Code.JSON_ERROR)
