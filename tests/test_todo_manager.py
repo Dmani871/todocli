@@ -199,6 +199,13 @@ def test_set_remove_todo_empty(todo_manager):
     assert todo == CurrentTodo({}, Code.ID_ERROR)
 
 
+def test_remove_invalid_json(todo_manager):
+    with patch("todocli.todo_manager.TodoManager.read_todos") as mock_requests:
+        mock_requests.return_value = tm.DBResponse([], Code.JSON_ERROR)
+        todo = todo_manager.remove(1)
+        assert todo == CurrentTodo({}, Code.JSON_ERROR)
+
+
 def test_remove_read_invalid_file(todo_manager):
     with patch("todocli.todo_manager.TodoManager.read_todos") as mock_requests:
         mock_requests.return_value = tm.DBResponse([], Code.DB_READ_ERROR)
