@@ -238,3 +238,12 @@ def test_remove_todos(todo_manager):
     todo_manager.remove_all()
     read_todos, _ = todo_manager.read_todos()
     assert len(read_todos) == 0
+
+
+def test_remove_all_write(todo_manager):
+    with patch(
+        "todocli.todo_manager.TodoManager._write_todos"
+    ) as mock_requests:
+        mock_requests.return_value = tm.DBResponse([], Code.DB_WRITE_ERROR)
+        todo = todo_manager.remove_all()
+        assert todo == CurrentTodo({}, Code.DB_WRITE_ERROR)

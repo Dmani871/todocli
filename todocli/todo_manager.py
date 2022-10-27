@@ -82,6 +82,9 @@ class TodoManager:
             return CurrentTodo({}, write_error)
         return CurrentTodo(todo, Code.SUCCESS)
 
-    def remove_all(self) -> None:
+    def remove_all(self) -> CurrentTodo:
         """Removes all todos."""
-        self._write_todos([])
+        todos, write_error = self._write_todos([])
+        if write_error != Code.SUCCESS:
+            return CurrentTodo({}, write_error)
+        return CurrentTodo({}, Code.SUCCESS)
