@@ -68,13 +68,17 @@ def add(
 @app.command(name="complete")
 def set_done(todo_id: int = typer.Argument(...)) -> None:
     toder = get_todoer()
-    _, error = toder.set_done(todo_id)
+    todo, error = toder.set_done(todo_id)
     if error != Code.SUCCESS:
         typer.secho(
             f'Completing to-do failed with "{error.value}"',
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
+    typer.secho(
+        f"""to-do: "{todo['Description']}" was completed """,
+        fg=typer.colors.GREEN,
+    )
 
 
 @app.callback()

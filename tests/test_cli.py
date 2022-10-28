@@ -348,7 +348,7 @@ def test_set_done_todo_invalid_type(
         ["complete", "one"],
     )
     assert (
-        "Error: Invalid value for 'TODO_ID': one is not a valid integer"  # noqa: E501
+        "Error: Invalid value for 'TODO_ID': one is not a valid integer"
         in result.stdout
     )
     assert result.exit_code == 2
@@ -369,3 +369,26 @@ def test_set_todo_done_no_todo(
         in result.stdout
     )
     assert result.exit_code == 1
+
+
+@patch("todocli.cli.get_todoer")
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_set_done_todo_success_return(
+    mock_get_todoer,
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    result = runner.invoke(
+        cli.app,
+        ["complete", "1"],
+    )
+    assert result.exit_code == 0
+    assert f'to-do: "{todo_task}" was completed' in result.stdout
