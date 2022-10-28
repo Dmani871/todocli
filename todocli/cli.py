@@ -107,6 +107,10 @@ def clear() -> None:
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
+    typer.secho(
+        """Cleared all todos""",
+        fg=typer.colors.GREEN,
+    )
 
 
 @app.callback()

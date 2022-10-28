@@ -658,3 +658,18 @@ def test_clear_write_error(
     assert read_todos == []
     assert result.exit_code == 1
     assert "Failed to clear to-do database" in result.stdout
+
+
+@patch("todocli.cli.get_todoer")
+def test_clear_success_return(
+    mock_get_todoer,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+
+    result = runner.invoke(
+        cli.app,
+        ["clear"],
+    )
+    assert result.exit_code == 0
+    assert "Cleared all todos" in result.stdout
