@@ -275,3 +275,38 @@ def test_add_todo_read_error_return(
     )
     assert f'Adding to-do failed with "{error_code.value}"' in result.stdout
     assert result.exit_code == 1
+
+
+@patch("todocli.cli.get_todoer")
+@patch("todocli.todo_manager.TodoManager._write_todos")
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_add_todo_write_error_return(
+    mock_read_todos,
+    mock_get_todoer,
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    mock_read_todos.return_value = tm.DBResponse([], Code.DB_WRITE_ERROR)
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        [
+            "add",
+            todo_task,
+            "--priority",
+            todo_priority,
+            "--due",
+            todo_due_date_str,
+        ],
+    )
+    assert (
+        f'Adding to-do failed with "{ Code.DB_WRITE_ERROR.value}"'
+        in result.stdout
+    )
+    assert result.exit_code == 1
