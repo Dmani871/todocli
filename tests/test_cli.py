@@ -621,3 +621,21 @@ def test_clear_no_todos(
     read_todos, _ = todo_manager.read_todos()
     assert read_todos == []
     assert result.exit_code == 0
+
+
+@patch("todocli.cli.get_todoer")
+def test_clear_multiple_todos(
+    mock_get_todoer,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    for todo in generate_todos(10):
+        todo_task, todo_priority, todo_due_date_str, return_todo = todo
+        todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    result = runner.invoke(
+        cli.app,
+        ["clear"],
+    )
+    read_todos, _ = todo_manager.read_todos()
+    assert read_todos == []
+    assert result.exit_code == 0
