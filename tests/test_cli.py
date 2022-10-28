@@ -392,3 +392,36 @@ def test_set_done_todo_success_return(
     )
     assert result.exit_code == 0
     assert f'to-do: "{todo_task}" was completed' in result.stdout
+
+
+@patch("todocli.cli.get_todoer")
+@patch("todocli.todo_manager.TodoManager.read_todos")
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+@pytest.mark.parametrize(
+    "error_code",
+    [Code.DB_READ_ERROR, Code.JSON_ERROR],
+)
+def test_set_todo_read_error_return(
+    mock_read_todos,
+    mock_get_todoer,
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+    error_code,
+):
+    mock_read_todos.return_value = tm.DBResponse([], error_code)
+    mock_get_todoer.return_value = todo_manager
+    todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    result = runner.invoke(
+        cli.app,
+        ["complete", "1"],
+    )
+    assert (
+        f'Completing to-do failed with "{ error_code.value}"' in result.stdout
+    )
+    assert result.exit_code == 1
