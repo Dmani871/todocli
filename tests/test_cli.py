@@ -246,7 +246,11 @@ def test_add_todo_success_return(
     "todo_task,todo_priority,todo_due_date_str,return_todo",
     list(generate_todos(1)),
 )
-def test_add_todo_read_invalid_file_return(
+@pytest.mark.parametrize(
+    "error_code",
+    [Code.DB_READ_ERROR, Code.JSON_ERROR],
+)
+def test_add_todo_read_error_return(
     mock_read_todos,
     mock_get_todoer,
     todo_task,
@@ -254,8 +258,9 @@ def test_add_todo_read_invalid_file_return(
     todo_due_date_str,
     return_todo,
     todo_manager,
+    error_code,
 ):
-    mock_read_todos.return_value = tm.DBResponse([], Code.DB_READ_ERROR)
+    mock_read_todos.return_value = tm.DBResponse([], error_code)
     mock_get_todoer.return_value = todo_manager
     result = runner.invoke(
         cli.app,
@@ -268,8 +273,5 @@ def test_add_todo_read_invalid_file_return(
             todo_due_date_str,
         ],
     )
-    assert (
-        f'Adding to-do failed with "{Code.DB_READ_ERROR.value}"'
-        in result.stdout
-    )
+    assert f'Adding to-do failed with "{error_code.value}"' in result.stdout
     assert result.exit_code == 1
