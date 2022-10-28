@@ -489,3 +489,19 @@ def test_remove_todo_invalid_type(
         in result.stdout
     )
     assert result.exit_code == 2
+
+
+@patch("todocli.cli.get_todoer")
+def test_remove_done_no_todo(
+    mock_get_todoer,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        ["remove", "1"],
+    )
+    assert (
+        f'Removing to-do failed with "{ Code.ID_ERROR.value}"' in result.stdout
+    )
+    assert result.exit_code == 1

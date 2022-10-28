@@ -84,7 +84,13 @@ def set_done(todo_id: int = typer.Argument(...)) -> None:
 @app.command()
 def remove(todo_id: int = typer.Argument(...)) -> None:
     toder = get_todoer()
-    toder.remove(todo_id)
+    todo, error = toder.remove(todo_id)
+    if error != Code.SUCCESS:
+        typer.secho(
+            f'Removing to-do failed with "{error.value}"',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
 
 
 @app.callback()
