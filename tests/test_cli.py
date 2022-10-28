@@ -606,3 +606,18 @@ def test_clear(
     read_todos, _ = todo_manager.read_todos()
     assert read_todos == []
     assert result.exit_code == 0
+
+
+@patch("todocli.cli.get_todoer")
+def test_clear_no_todos(
+    mock_get_todoer,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        ["clear"],
+    )
+    read_todos, _ = todo_manager.read_todos()
+    assert read_todos == []
+    assert result.exit_code == 0
