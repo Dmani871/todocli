@@ -65,6 +65,12 @@ def add(
     )
 
 
+@app.command(name="complete")
+def set_done(todo_id: int = typer.Argument(...)) -> None:
+    toder = get_todoer()
+    toder.set_done(todo_id)
+
+
 @app.callback()
 def main(
     version: Optional[bool] = typer.Option(

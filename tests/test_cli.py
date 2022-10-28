@@ -310,3 +310,28 @@ def test_add_todo_write_error_return(
         in result.stdout
     )
     assert result.exit_code == 1
+
+
+@patch("todocli.cli.get_todoer")
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_set_done_todo(
+    mock_get_todoer,
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    result = runner.invoke(
+        cli.app,
+        ["complete", "1"],
+    )
+    read_todos, _ = todo_manager.read_todos()
+    return_todo["Done"] = True
+    assert read_todos == [return_todo]
+    assert result.exit_code == 0
