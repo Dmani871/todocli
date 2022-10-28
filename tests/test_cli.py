@@ -335,3 +335,20 @@ def test_set_done_todo(
     return_todo["Done"] = True
     assert read_todos == [return_todo]
     assert result.exit_code == 0
+
+
+@patch("todocli.cli.get_todoer")
+def test_set_done_todo_invalid_type(
+    mock_get_todoer,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        ["complete", "one"],
+    )
+    assert (
+        "Error: Invalid value for 'TODO_ID': one is not a valid integer"  # noqa: E501
+        in result.stdout
+    )
+    assert result.exit_code == 2
