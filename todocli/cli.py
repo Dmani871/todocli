@@ -81,6 +81,12 @@ def set_done(todo_id: int = typer.Argument(...)) -> None:
     )
 
 
+@app.command()
+def remove(todo_id: int = typer.Argument(...)) -> None:
+    toder = get_todoer()
+    toder.remove(todo_id)
+
+
 @app.callback()
 def main(
     version: Optional[bool] = typer.Option(
