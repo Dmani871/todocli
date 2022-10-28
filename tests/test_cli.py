@@ -472,3 +472,20 @@ def test_remove_todo(
     read_todos, _ = todo_manager.read_todos()
     assert read_todos == []
     assert result.exit_code == 0
+
+
+@patch("todocli.cli.get_todoer")
+def test_remove_todo_invalid_type(
+    mock_get_todoer,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        ["remove", "one"],
+    )
+    assert (
+        "Error: Invalid value for 'TODO_ID': one is not a valid integer"
+        in result.stdout
+    )
+    assert result.exit_code == 2
