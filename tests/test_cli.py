@@ -67,153 +67,128 @@ def test_init_invalid_filepath():
     )
 
 
+@patch("todocli.cli.get_todoer")
 @pytest.mark.parametrize(
     "todo_task,todo_priority,todo_due_date_str,return_todo",
     list(generate_todos(1)),
 )
 def test_add_todo(
+    mock_get_todoer,
     todo_task,
     todo_priority,
     todo_due_date_str,
     return_todo,
     todo_manager,
 ):
-    with patch("todocli.cli.get_todoer") as mock_requests:
-        mock_requests.return_value = todo_manager
-        result = runner.invoke(
-            cli.app,
-            [
-                "add",
-                todo_task,
-                "--priority",
-                todo_priority,
-                "--due",
-                todo_due_date_str,
-            ],
-        )
-        read_todos, _ = todo_manager.read_todos()
-        assert read_todos == [return_todo]
-        assert result.exit_code == 0
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        [
+            "add",
+            todo_task,
+            "--priority",
+            todo_priority,
+            "--due",
+            todo_due_date_str,
+        ],
+    )
+    read_todos, _ = todo_manager.read_todos()
+    assert read_todos == [return_todo]
+    assert result.exit_code == 0
 
 
+@patch("todocli.cli.get_todoer")
 @pytest.mark.parametrize(
     "todo_task,todo_priority,todo_due_date_str,return_todo",
     tuple(generate_todos(1, todo_priority=10))
     + tuple(generate_todos(1, todo_priority=0)),
 )
 def test_add_todo_priority(
+    mock_get_todoer,
     todo_task,
     todo_priority,
     todo_due_date_str,
     return_todo,
     todo_manager,
 ):
-    with patch("todocli.cli.get_todoer") as mock_requests:
-        mock_requests.return_value = todo_manager
-        result = runner.invoke(
-            cli.app,
-            [
-                "add",
-                todo_task,
-                "--priority",
-                todo_priority,
-                "--due",
-                todo_due_date_str,
-            ],
-        )
-        assert (
-            f"Error: Invalid value for '--priority': {todo_priority} is not in the valid range of 1 to 3."  # noqa: E501
-            in result.stdout
-        )
-        assert result.exit_code == 2
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        [
+            "add",
+            todo_task,
+            "--priority",
+            todo_priority,
+            "--due",
+            todo_due_date_str,
+        ],
+    )
+    assert (
+        f"Error: Invalid value for '--priority': {todo_priority} is not in the valid range of 1 to 3."  # noqa: E501
+        in result.stdout
+    )
+    assert result.exit_code == 2
 
 
+@patch("todocli.cli.get_todoer")
 @pytest.mark.parametrize(
     "todo_task,todo_priority,todo_due_date_str,return_todo",
     tuple(generate_todos(1, todo_priority=1)),
 )
 def test_add_todo_priority_default(
+    mock_get_todoer,
     todo_task,
     todo_priority,
     todo_due_date_str,
     return_todo,
     todo_manager,
 ):
-    with patch("todocli.cli.get_todoer") as mock_requests:
-        mock_requests.return_value = todo_manager
-        result = runner.invoke(
-            cli.app,
-            [
-                "add",
-                todo_task,
-                "--due",
-                todo_due_date_str,
-            ],
-        )
-        return_todo["Priority"] = 2
-        read_todos, _ = todo_manager.read_todos()
-        assert read_todos == [return_todo]
-        assert result.exit_code == 0
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        [
+            "add",
+            todo_task,
+            "--due",
+            todo_due_date_str,
+        ],
+    )
+    return_todo["Priority"] = 2
+    read_todos, _ = todo_manager.read_todos()
+    assert read_todos == [return_todo]
+    assert result.exit_code == 0
 
 
+@patch("todocli.cli.get_todoer")
 @pytest.mark.parametrize(
     "todo_task,todo_priority,todo_due_date_str,return_todo",
     tuple(generate_todos(1, include_due_date=False)),
 )
 def test_add_todo_wo_due(
+    mock_get_todoer,
     todo_task,
     todo_priority,
     todo_due_date_str,
     return_todo,
     todo_manager,
 ):
-    with patch("todocli.cli.get_todoer") as mock_requests:
-        mock_requests.return_value = todo_manager
-        result = runner.invoke(
-            cli.app,
-            ["add", todo_task, "--priority", todo_priority],
-        )
-        read_todos, _ = todo_manager.read_todos()
-        assert read_todos == [return_todo]
-        assert result.exit_code == 0
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        ["add", todo_task, "--priority", todo_priority],
+    )
+    read_todos, _ = todo_manager.read_todos()
+    assert read_todos == [return_todo]
+    assert result.exit_code == 0
 
 
-def test_todo_saved_multiple(todo_manager):
+@patch("todocli.cli.get_todoer")
+def test_todo_saved_multiple(mock_get_todoer, todo_manager):
     expected_todos = []
-    with patch("todocli.cli.get_todoer") as mock_requests:
-        mock_requests.return_value = todo_manager
-        for todo in generate_todos(10):
-            todo_task, todo_priority, todo_due_date_str, return_todo = todo
-            runner.invoke(
-                cli.app,
-                [
-                    "add",
-                    todo_task,
-                    "--priority",
-                    todo_priority,
-                    "--due",
-                    todo_due_date_str,
-                ],
-            )
-            expected_todos.append(return_todo)
-    with todo_manager._db_path.open("r") as db:
-        assert list(json.load(db)) == expected_todos
-
-
-@pytest.mark.parametrize(
-    "todo_task,todo_priority,todo_due_date_str,return_todo",
-    list(generate_todos(1)),
-)
-def test_add_todo_success_return(
-    todo_task,
-    todo_priority,
-    todo_due_date_str,
-    return_todo,
-    todo_manager,
-):
-    with patch("todocli.cli.get_todoer") as mock_requests:
-        mock_requests.return_value = todo_manager
-        result = runner.invoke(
+    mock_get_todoer.return_value = todo_manager
+    for todo in generate_todos(10):
+        todo_task, todo_priority, todo_due_date_str, return_todo = todo
+        runner.invoke(
             cli.app,
             [
                 "add",
@@ -224,10 +199,40 @@ def test_add_todo_success_return(
                 todo_due_date_str,
             ],
         )
-        read_todos, _ = todo_manager.read_todos()
-        assert read_todos == [return_todo]
-        assert result.exit_code == 0
-        assert (
-            f'to-do: "{todo_task}" was added with priority: {todo_priority}'
-            in result.stdout
-        )
+        expected_todos.append(return_todo)
+    with todo_manager._db_path.open("r") as db:
+        assert list(json.load(db)) == expected_todos
+
+
+@patch("todocli.cli.get_todoer")
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_add_todo_success_return(
+    mock_get_todoer,
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        [
+            "add",
+            todo_task,
+            "--priority",
+            todo_priority,
+            "--due",
+            todo_due_date_str,
+        ],
+    )
+    read_todos, _ = todo_manager.read_todos()
+    assert read_todos == [return_todo]
+    assert result.exit_code == 0
+    assert (
+        f'to-do: "{todo_task}" was added with priority: {todo_priority}'
+        in result.stdout
+    )
