@@ -100,7 +100,13 @@ def remove(todo_id: int = typer.Argument(...)) -> None:
 @app.command()
 def clear() -> None:
     toder = get_todoer()
-    toder.remove_all()
+    todo, error = toder.remove_all()
+    if error != Code.SUCCESS:
+        typer.secho(
+            "Failed to clear to-do database",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
 
 
 @app.callback()

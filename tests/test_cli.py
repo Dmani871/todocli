@@ -639,3 +639,22 @@ def test_clear_multiple_todos(
     read_todos, _ = todo_manager.read_todos()
     assert read_todos == []
     assert result.exit_code == 0
+
+
+@patch("todocli.todo_manager.TodoManager._write_todos")
+@patch("todocli.cli.get_todoer")
+def test_clear_write_error(
+    mock_get_todoer,
+    mock_write_todos,
+    todo_manager,
+):
+    mock_write_todos.return_value = tm.DBResponse([], Code.DB_WRITE_ERROR)
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        ["clear"],
+    )
+    read_todos, _ = todo_manager.read_todos()
+    assert read_todos == []
+    assert result.exit_code == 1
+    assert "Failed to clear to-do database" in result.stdout
