@@ -12,8 +12,26 @@ class DBResponse(NamedTuple):
 
 
 class TodoManager:
+    def read_write(func):
+        def wrapper(self, *args, **kwargs):
+            todos, read_error = self.read_todos()
+            if read_error != Code.SUCCESS:
+                return CurrentTodo({}, read_error)
+            self.todos = todos
+            current_todo = func(self, *args, **kwargs)
+            if current_todo.code != Code.SUCCESS:
+                return current_todo
+            todos, write_error = self._write_todos(todos)
+            self.todos = []
+            if write_error != Code.SUCCESS:
+                return CurrentTodo({}, write_error)
+            return current_todo
+
+        return wrapper
+
     def __init__(self, db_path: Path) -> None:
         self._db_path = db_path
+        self.todos: list = []
 
     def _write_todos(self, todos: list) -> DBResponse:
         """Writes todos."""
@@ -35,6 +53,7 @@ class TodoManager:
         except OSError:
             return DBResponse([], Code.DB_READ_ERROR)
 
+    @read_write  # type: ignore
     def add(
         self, description: str, priority: int, due: str = None
     ) -> CurrentTodo:
@@ -45,45 +64,29 @@ class TodoManager:
             "Due": due,
             "Done": False,
         }
-        todos, read_error = self.read_todos()
-        if read_error != Code.SUCCESS:
-            return CurrentTodo(todo_json, read_error)
-        todos.append(todo_json)
-        todos, write_error = self._write_todos(todos)
-        if write_error != Code.SUCCESS:
-            return CurrentTodo(todo_json, write_error)
+        self.todos.append(todo_json)
         return CurrentTodo(
             todo_json,
             Code.SUCCESS,
         )
 
+    @read_write  # type: ignore
     def set_done(self, todo_id: int) -> CurrentTodo:
         """Set a to-do as done."""
-        todos, read_error = self.read_todos()
-        if read_error != Code.SUCCESS:
-            return CurrentTodo({}, read_error)
         try:
-            todo = todos[todo_id - 1]
+            todo = self.todos[todo_id - 1]
         except IndexError:
             return CurrentTodo({}, Code.ID_ERROR)
         todo["Done"] = True
-        todos, write_error = self._write_todos(todos)
-        if write_error != Code.SUCCESS:
-            return CurrentTodo({}, write_error)
         return CurrentTodo(todo, Code.SUCCESS)
 
+    @read_write  # type: ignore
     def remove(self, todo_id: int) -> CurrentTodo:
         """Removes todo."""
-        todos, read_error = self.read_todos()
-        if read_error != Code.SUCCESS:
-            return CurrentTodo({}, read_error)
         try:
-            todo = todos.pop(todo_id - 1)
+            todo = self.todos.pop(todo_id - 1)
         except IndexError:
             return CurrentTodo({}, Code.ID_ERROR)
-        todos, write_error = self._write_todos(todos)
-        if write_error != Code.SUCCESS:
-            return CurrentTodo({}, write_error)
         return CurrentTodo(todo, Code.SUCCESS)
 
     def remove_all(self) -> CurrentTodo:

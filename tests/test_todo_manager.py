@@ -131,7 +131,7 @@ def test_add_read_invalid_file(
         mock_requests.return_value = tm.DBResponse([], Code.DB_READ_ERROR)
         todo = todo_manager.add(todo_task, todo_priority, todo_due_date_str)
         assert mock_requests.called
-        assert todo == CurrentTodo(return_todo, Code.DB_READ_ERROR)
+        assert todo == CurrentTodo({}, Code.DB_READ_ERROR)
 
 
 @pytest.mark.parametrize(
@@ -147,7 +147,7 @@ def test_add_write_invalid_file(
         mock_requests.return_value = tm.DBResponse([], Code.DB_WRITE_ERROR)
         todo = todo_manager.add(todo_task, todo_priority, todo_due_date_str)
         assert mock_requests.called
-        assert todo == CurrentTodo(return_todo, Code.DB_WRITE_ERROR)
+        assert todo == CurrentTodo({}, Code.DB_WRITE_ERROR)
 
 
 @pytest.mark.parametrize(
@@ -161,7 +161,7 @@ def test_add_invalid_json(
         mock_requests.return_value = tm.DBResponse([], Code.JSON_ERROR)
         todo = todo_manager.add(todo_task, todo_priority, todo_due_date_str)
         assert mock_requests.called
-        assert todo == CurrentTodo(return_todo, Code.JSON_ERROR)
+        assert todo == CurrentTodo({}, Code.JSON_ERROR)
 
 
 @pytest.mark.parametrize(
