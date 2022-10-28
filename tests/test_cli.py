@@ -505,3 +505,26 @@ def test_remove_done_no_todo(
         f'Removing to-do failed with "{ Code.ID_ERROR.value}"' in result.stdout
     )
     assert result.exit_code == 1
+
+
+@patch("todocli.cli.get_todoer")
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_remove_todo_success_return(
+    mock_get_todoer,
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    result = runner.invoke(
+        cli.app,
+        ["remove", "1"],
+    )
+    assert result.exit_code == 0
+    assert f'to-do: "{todo_task}" was removed' in result.stdout

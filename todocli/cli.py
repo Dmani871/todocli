@@ -91,6 +91,10 @@ def remove(todo_id: int = typer.Argument(...)) -> None:
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
+    typer.secho(
+        f"""to-do: "{todo['Description']}" was removed """,
+        fg=typer.colors.GREEN,
+    )
 
 
 @app.callback()
