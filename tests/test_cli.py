@@ -6,6 +6,8 @@ import pytest
 from typer.testing import CliRunner
 
 from todocli import __app_name__, __version__, cli, config
+from todocli import todo_manager as tm
+from todocli.return_codes import Code
 
 from .helper import generate_todos
 
@@ -236,3 +238,38 @@ def test_add_todo_success_return(
         f'to-do: "{todo_task}" was added with priority: {todo_priority}'
         in result.stdout
     )
+
+
+@patch("todocli.cli.get_todoer")
+@patch("todocli.todo_manager.TodoManager.read_todos")
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_add_todo_read_invalid_file_return(
+    mock_read_todos,
+    mock_get_todoer,
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    mock_read_todos.return_value = tm.DBResponse([], Code.DB_READ_ERROR)
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        [
+            "add",
+            todo_task,
+            "--priority",
+            todo_priority,
+            "--due",
+            todo_due_date_str,
+        ],
+    )
+    assert (
+        f'Adding to-do failed with "{Code.DB_READ_ERROR.value}"'
+        in result.stdout
+    )
+    assert result.exit_code == 1

@@ -52,6 +52,12 @@ def add(
 ) -> None:
     toder = get_todoer()
     todo, error = toder.add(description, priority, due)
+    if error != Code.SUCCESS:
+        typer.secho(
+            f'Adding to-do failed with "{error.value}"', fg=typer.colors.RED
+        )
+        raise typer.Exit(1)
+
     typer.secho(
         f"""to-do: "{todo['Description']}" was added """
         f"""with priority: {priority}""",
