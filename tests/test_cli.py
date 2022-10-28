@@ -352,3 +352,20 @@ def test_set_done_todo_invalid_type(
         in result.stdout
     )
     assert result.exit_code == 2
+
+
+@patch("todocli.cli.get_todoer")
+def test_set_todo_done_no_todo(
+    mock_get_todoer,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        ["complete", "1"],
+    )
+    assert (
+        f'Completing to-do failed with "{ Code.ID_ERROR.value}"'
+        in result.stdout
+    )
+    assert result.exit_code == 1

@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 class Code(Enum):
     SUCCESS = auto()
-    ID_ERROR = auto()
+    ID_ERROR = "An ID ERORR:Unable to find todo with ID"
     CONFIG_READ_ERROR = "A CONFIG READ ERORR:Unable to read config file"
     OS_ERROR = "An OS ERROR has occured"
     DB_INIT_ERROR = (

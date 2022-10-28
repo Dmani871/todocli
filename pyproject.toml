@@ -5,5 +5,5 @@ testpaths = [
 ]
 
 [tool.black]
-line-length = 80
+line-length = 79
 target-version = ['py310']
