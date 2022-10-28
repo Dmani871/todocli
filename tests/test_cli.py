@@ -284,7 +284,7 @@ def test_add_todo_read_error_return(
     list(generate_todos(1)),
 )
 def test_add_todo_write_error_return(
-    mock_read_todos,
+    mock_write_todos,
     mock_get_todoer,
     todo_task,
     todo_priority,
@@ -292,7 +292,7 @@ def test_add_todo_write_error_return(
     return_todo,
     todo_manager,
 ):
-    mock_read_todos.return_value = tm.DBResponse([], Code.DB_WRITE_ERROR)
+    mock_write_todos.return_value = tm.DBResponse([], Code.DB_WRITE_ERROR)
     mock_get_todoer.return_value = todo_manager
     result = runner.invoke(
         cli.app,
