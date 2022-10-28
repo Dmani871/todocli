@@ -97,6 +97,12 @@ def remove(todo_id: int = typer.Argument(...)) -> None:
     )
 
 
+@app.command()
+def clear() -> None:
+    toder = get_todoer()
+    toder.remove_all()
+
+
 @app.callback()
 def main(
     version: Optional[bool] = typer.Option(
