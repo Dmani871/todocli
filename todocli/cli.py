@@ -7,6 +7,7 @@ from prettytable import PrettyTable
 
 from todocli import __app_name__, __version__, config
 from todocli.return_codes import Code
+from todocli.todo_manager import TodoManager
 
 app = typer.Typer()
 
@@ -42,7 +43,8 @@ def init(
 
 
 def get_todoer():
-    pass
+    db_path = config.get_db_path()
+    return TodoManager(db_path)
 
 
 @app.command()
@@ -139,8 +141,7 @@ def list(sort_by: str = typer.Option(None)) -> None:
     table.field_names = ["Description", "Priority", "Due", "Done"]
     if sort_by and sort_by not in table.field_names:
         typer.secho(
-            f"Invalid sort by option '{sort_by}' please",
-            "the following options:{','.join(table.field_names)}",
+            f"'{sort_by}' is invalid try:{','.join(table.field_names)} ",
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)

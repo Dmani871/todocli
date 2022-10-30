@@ -762,6 +762,14 @@ def test_list_sortby_invalid_option(mock_get_todoer, todo_manager):
     )
     assert result.exit_code == 1
     assert (
-        "Invalid sort by option 'hello' please the "
-        "following options:Description,Priority,Due,Done" in result.stdout
+        "'hello' is invalid try:Description,Priority,Due,Done" in result.stdout
     )
+
+
+def get_toder_wo_config_file():
+    runner.invoke(
+        cli.app,
+        ["init"],
+    )
+    todoer = cli.get_todoer()
+    assert isinstance(todoer, tm.TodoManager)
