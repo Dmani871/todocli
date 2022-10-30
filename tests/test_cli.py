@@ -748,3 +748,20 @@ def test_list_sortby(mock_get_todoer, todo_manager, sort):
         ["list", "--sort-by", sort],
     )
     assert table.get_string(sortby=sort) in result.stdout
+
+
+@patch("todocli.cli.get_todoer")
+def test_list_sortby_invalid_option(mock_get_todoer, todo_manager):
+    mock_get_todoer.return_value = todo_manager
+    for todo in generate_todos(10):
+        todo_task, todo_priority, todo_due_date_str, return_todo = todo
+        todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+    result = runner.invoke(
+        cli.app,
+        ["list", "--sort-by", "hello"],
+    )
+    assert result.exit_code == 1
+    assert (
+        "Invalid sort by option 'hello' please the "
+        "following options:Description,Priority,Due,Done" in result.stdout
+    )

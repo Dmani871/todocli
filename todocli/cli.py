@@ -137,6 +137,13 @@ def list(sort_by: str = typer.Option(None)) -> None:
 
     table = PrettyTable()
     table.field_names = ["Description", "Priority", "Due", "Done"]
+    if sort_by and sort_by not in table.field_names:
+        typer.secho(
+            f"Invalid sort by option '{sort_by}' please",
+            "the following options:{','.join(table.field_names)}",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
     table.sortby = sort_by
     for todo in todos:
         table.add_row(todo.values())
