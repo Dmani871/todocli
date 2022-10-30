@@ -122,6 +122,12 @@ def list() -> None:
     """Clears a todo from the to-do database using its ID."""
     toder = get_todoer()
     todos, error = toder.read_todos()
+    if error != Code.SUCCESS:
+        typer.secho(
+            f'Listing to-do failed with "{ error.value}"',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
     if len(todos) == 0:
         typer.secho(
             "There are no tasks in the to-do list yet", fg=typer.colors.RED

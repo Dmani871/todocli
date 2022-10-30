@@ -686,3 +686,25 @@ def test_list_no_todos(
         ["list"],
     )
     assert "There are no tasks in the to-do list yet" in result.stdout
+
+
+@patch("todocli.cli.get_todoer")
+@patch("todocli.todo_manager.TodoManager.read_todos")
+@pytest.mark.parametrize(
+    "error_code",
+    [Code.DB_READ_ERROR, Code.JSON_ERROR],
+)
+def test_list_read_error_return(
+    mock_read_todos,
+    mock_get_todoer,
+    todo_manager,
+    error_code,
+):
+    mock_read_todos.return_value = tm.DBResponse([], error_code)
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        ["list"],
+    )
+    assert f'Listing to-do failed with "{ error_code.value}"' in result.stdout
+    assert result.exit_code == 1
