@@ -1,9 +1,11 @@
 import configparser
 import json
+from io import StringIO
 from unittest.mock import patch
 
 import pytest
 from prettytable import PrettyTable
+from typer import Exit
 from typer.testing import CliRunner
 
 from todocli import __app_name__, __version__, cli, config
@@ -766,10 +768,22 @@ def test_list_sortby_invalid_option(mock_get_todoer, todo_manager):
     )
 
 
-def get_toder_wo_config_file():
+def test_get_toder():
     runner.invoke(
         cli.app,
         ["init"],
     )
     todoer = cli.get_todoer()
     assert isinstance(todoer, tm.TodoManager)
+
+
+@patch("todocli.config.get_db_path")
+def test_get_toder_wo_init(mock_get_db_path):
+    mock_get_db_path.return_value = Code.CONFIG_READ_ERROR
+    with patch("sys.stdout", new=StringIO()) as fake_out:
+        with pytest.raises(Exit):
+            cli.get_todoer()
+        assert (
+            'Config file not found. Please, run "todocli init"'
+            in fake_out.getvalue()
+        )

@@ -44,6 +44,12 @@ def init(
 
 def get_todoer():
     db_path = config.get_db_path()
+    if db_path == Code.CONFIG_READ_ERROR:
+        typer.secho(
+            'Config file not found. Please, run "todocli init"',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
     return TodoManager(db_path)
 
 
