@@ -673,3 +673,16 @@ def test_clear_success_return(
     )
     assert result.exit_code == 0
     assert "Cleared all todos" in result.stdout
+
+
+@patch("todocli.cli.get_todoer")
+def test_list_no_todos(
+    mock_get_todoer,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        ["list"],
+    )
+    assert "There are no tasks in the to-do list yet" in result.stdout

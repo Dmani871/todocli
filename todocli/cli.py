@@ -50,6 +50,7 @@ def add(
     priority: int = typer.Option(2, min=1, max=3),
     due: str = typer.Option(None),
 ) -> None:
+    """Adds a todo to the to-do database."""
     toder = get_todoer()
     todo, error = toder.add(description, priority, due)
     if error != Code.SUCCESS:
@@ -67,6 +68,7 @@ def add(
 
 @app.command(name="complete")
 def set_done(todo_id: int = typer.Argument(...)) -> None:
+    """Set a todo as done in the to-do database using its ID."""
     toder = get_todoer()
     todo, error = toder.set_done(todo_id)
     if error != Code.SUCCESS:
@@ -83,6 +85,7 @@ def set_done(todo_id: int = typer.Argument(...)) -> None:
 
 @app.command()
 def remove(todo_id: int = typer.Argument(...)) -> None:
+    """Removes a todo from the to-do database using its ID."""
     toder = get_todoer()
     todo, error = toder.remove(todo_id)
     if error != Code.SUCCESS:
@@ -99,6 +102,7 @@ def remove(todo_id: int = typer.Argument(...)) -> None:
 
 @app.command()
 def clear() -> None:
+    """Clears all todos from the to-do database using its ID."""
     toder = get_todoer()
     todo, error = toder.remove_all()
     if error != Code.SUCCESS:
@@ -111,6 +115,18 @@ def clear() -> None:
         """Cleared all todos""",
         fg=typer.colors.GREEN,
     )
+
+
+@app.command()
+def list() -> None:
+    """Clears a todo from the to-do database using its ID."""
+    toder = get_todoer()
+    todos, error = toder.read_todos()
+    if len(todos) == 0:
+        typer.secho(
+            "There are no tasks in the to-do list yet", fg=typer.colors.RED
+        )
+        raise typer.Exit(1)
 
 
 @app.callback()
