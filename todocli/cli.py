@@ -119,7 +119,7 @@ def clear() -> None:
 
 
 @app.command()
-def list() -> None:
+def list(sort_by: str = typer.Option(None)) -> None:
     """Clears a todo from the to-do database using its ID."""
     toder = get_todoer()
     todos, error = toder.read_todos()
@@ -137,10 +137,11 @@ def list() -> None:
 
     table = PrettyTable()
     table.field_names = ["Description", "Priority", "Due", "Done"]
+    table.sortby = sort_by
     for todo in todos:
         table.add_row(todo.values())
     typer.secho(
-        str(table),
+        table.get_string(),
         fg=typer.colors.BLUE,
     )
 

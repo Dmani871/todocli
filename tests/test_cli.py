@@ -727,4 +727,24 @@ def test_list_sucess_return(
         cli.app,
         ["list"],
     )
-    assert str(table) in result.stdout
+    assert table.get_string() in result.stdout
+
+
+@patch("todocli.cli.get_todoer")
+@pytest.mark.parametrize(
+    "sort",
+    ["Description", "Priority", "Due", "Done"],
+)
+def test_list_sortby(mock_get_todoer, todo_manager, sort):
+    mock_get_todoer.return_value = todo_manager
+    table = PrettyTable()
+    table.field_names = ["Description", "Priority", "Due", "Done"]
+    for todo in generate_todos(10):
+        todo_task, todo_priority, todo_due_date_str, return_todo = todo
+        todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+        table.add_row([todo_task, todo_priority, todo_due_date_str, False])
+    result = runner.invoke(
+        cli.app,
+        ["list", "--sort-by", sort],
+    )
+    assert table.get_string(sortby=sort) in result.stdout
