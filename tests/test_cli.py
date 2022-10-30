@@ -778,12 +778,25 @@ def test_get_toder():
 
 
 @patch("todocli.config.get_db_path")
-def test_get_toder_wo_init(mock_get_db_path):
+def test_get_toder_wo_init_config(mock_get_db_path):
     mock_get_db_path.return_value = Code.CONFIG_READ_ERROR
     with patch("sys.stdout", new=StringIO()) as fake_out:
         with pytest.raises(Exit):
             cli.get_todoer()
         assert (
             'Config file not found. Please, run "todocli init"'
+            in fake_out.getvalue()
+        )
+
+
+@patch("todocli.config.get_db_path")
+def test_get_toder_wo_init_db_path_non_exisitant(mock_get_db_path, tmpdir):
+    db_path = tmpdir / "todo.json"
+    mock_get_db_path.return_value = db_path
+    with patch("sys.stdout", new=StringIO()) as fake_out:
+        with pytest.raises(Exit):
+            cli.get_todoer()
+        assert (
+            'DB path does not exist. Please, run "todocli init"'
             in fake_out.getvalue()
         )

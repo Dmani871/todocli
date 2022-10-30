@@ -50,6 +50,12 @@ def get_todoer():
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
+    if not db_path.exists():
+        typer.secho(
+            'DB path does not exist. Please, run "todocli init"',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
     return TodoManager(db_path)
 
 
