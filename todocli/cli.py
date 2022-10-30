@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+from prettytable import PrettyTable
 
 from todocli import __app_name__, __version__, config
 from todocli.return_codes import Code
@@ -133,6 +134,15 @@ def list() -> None:
             "There are no tasks in the to-do list yet", fg=typer.colors.RED
         )
         raise typer.Exit(1)
+
+    table = PrettyTable()
+    table.field_names = ["Description", "Priority", "Due", "Done"]
+    for todo in todos:
+        table.add_row(todo.values())
+    typer.secho(
+        str(table),
+        fg=typer.colors.BLUE,
+    )
 
 
 @app.callback()

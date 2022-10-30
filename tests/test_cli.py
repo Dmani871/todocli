@@ -3,6 +3,7 @@ import json
 from unittest.mock import patch
 
 import pytest
+from prettytable import PrettyTable
 from typer.testing import CliRunner
 
 from todocli import __app_name__, __version__, cli, config
@@ -708,3 +709,22 @@ def test_list_read_error_return(
     )
     assert f'Listing to-do failed with "{ error_code.value}"' in result.stdout
     assert result.exit_code == 1
+
+
+@patch("todocli.cli.get_todoer")
+def test_list_sucess_return(
+    mock_get_todoer,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    table = PrettyTable()
+    table.field_names = ["Description", "Priority", "Due", "Done"]
+    for todo in generate_todos(10):
+        todo_task, todo_priority, todo_due_date_str, return_todo = todo
+        todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+        table.add_row([todo_task, todo_priority, todo_due_date_str, False])
+    result = runner.invoke(
+        cli.app,
+        ["list"],
+    )
+    assert str(table) in result.stdout
