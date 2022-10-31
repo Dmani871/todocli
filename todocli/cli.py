@@ -1,4 +1,5 @@
 """This module provides the To-Do CLI."""
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -9,6 +10,7 @@ from todocli import __app_name__, __version__, config
 from todocli.return_codes import Code
 from todocli.todo_manager import TodoManager
 
+DT_FORMAT = "%Y-%m-%d"
 app = typer.Typer()
 
 
@@ -63,11 +65,12 @@ def get_todoer():
 def add(
     description: str = typer.Argument(...),
     priority: int = typer.Option(2, min=1, max=3),
-    due: str = typer.Option(None),
+    due: datetime = typer.Option(None, formats=[DT_FORMAT]),
 ) -> None:
     """Adds a todo to the to-do database."""
     toder = get_todoer()
-    todo, error = toder.add(description, priority, due)
+    due_str = due.strftime(DT_FORMAT) if due else None
+    todo, error = toder.add(description, priority, due_str)
     if error != Code.SUCCESS:
         typer.secho(
             f'Adding to-do failed with "{error.value}"', fg=typer.colors.RED
@@ -150,16 +153,18 @@ def list(sort_by: str = typer.Option(None)) -> None:
         raise typer.Exit(1)
 
     table = PrettyTable()
-    table.field_names = ["Description", "Priority", "Due", "Done"]
+    table.field_names = ["ID", "Description", "Priority", "Due", "Done"]
     if sort_by and sort_by not in table.field_names:
         typer.secho(
             f"'{sort_by}' is invalid try:{','.join(table.field_names)} ",
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
+    for id, todo in enumerate(todos, start=1):
+        desc, priority, due, done = todo.values()
+        table.add_row([id, desc, priority, due, done])
     table.sortby = sort_by
-    for todo in todos:
-        table.add_row(todo.values())
+    table.sort_key = lambda x: str(x)
     typer.secho(
         table.get_string(),
         fg=typer.colors.BLUE,

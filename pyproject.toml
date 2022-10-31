@@ -7,3 +7,8 @@ testpaths = [
 [tool.black]
 line-length = 79
 target-version = ['py310']
+
+[tool.coverage.report]
+omit=['*/test*']
+[tool.coverage.html]
+directory = "tests/coverage/html_report/"

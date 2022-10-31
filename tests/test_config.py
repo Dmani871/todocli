@@ -62,6 +62,26 @@ def test_init_app_unsucessful_config_files_make(
     assert config.init_app(db_path) == Code.OS_ERROR
 
 
+@patch("todocli.config._init_config_file")
+def test_init_app_unsucessful_init_config_file(
+    mock_init_config_file, tmp_path
+):
+    mock_init_config_file.return_value = Code.OS_ERROR
+    config.CONFIG_DIR_PATH = tmp_path
+    config.CONFIG_FILE_PATH = tmp_path / "config.ini"
+    db_path = tmp_path / "todo.json"
+    assert config.init_app(db_path) == Code.OS_ERROR
+
+
+@patch("todocli.config.init_database")
+def test_init_app_unsucessful_init_database(mock_init_config_file, tmp_path):
+    mock_init_config_file.return_value = Code.DB_INIT_ERROR
+    config.CONFIG_DIR_PATH = tmp_path
+    config.CONFIG_FILE_PATH = tmp_path / "config.ini"
+    db_path = tmp_path / "todo.json"
+    assert config.init_app(db_path) == Code.DB_INIT_ERROR
+
+
 def test_read_db_path(tmp_path):
     config.CONFIG_DIR_PATH = tmp_path
     config.CONFIG_FILE_PATH = tmp_path / "config.ini"

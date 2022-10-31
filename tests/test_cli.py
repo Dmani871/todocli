@@ -720,11 +720,11 @@ def test_list_sucess_return(
 ):
     mock_get_todoer.return_value = todo_manager
     table = PrettyTable()
-    table.field_names = ["Description", "Priority", "Due", "Done"]
-    for todo in generate_todos(10):
+    table.field_names = ["ID", "Description", "Priority", "Due", "Done"]
+    for id, todo in enumerate(generate_todos(10), start=1):
         todo_task, todo_priority, todo_due_date_str, return_todo = todo
         todo_manager.add(todo_task, todo_priority, todo_due_date_str)
-        table.add_row([todo_task, todo_priority, todo_due_date_str, False])
+        table.add_row([id, todo_task, todo_priority, todo_due_date_str, False])
     result = runner.invoke(
         cli.app,
         ["list"],
@@ -740,16 +740,19 @@ def test_list_sucess_return(
 def test_list_sortby(mock_get_todoer, todo_manager, sort):
     mock_get_todoer.return_value = todo_manager
     table = PrettyTable()
-    table.field_names = ["Description", "Priority", "Due", "Done"]
-    for todo in generate_todos(10):
+    table.field_names = ["ID", "Description", "Priority", "Due", "Done"]
+    for id, todo in enumerate(generate_todos(10), start=1):
         todo_task, todo_priority, todo_due_date_str, return_todo = todo
         todo_manager.add(todo_task, todo_priority, todo_due_date_str)
-        table.add_row([todo_task, todo_priority, todo_due_date_str, False])
+        table.add_row([id, todo_task, todo_priority, todo_due_date_str, False])
     result = runner.invoke(
         cli.app,
         ["list", "--sort-by", sort],
     )
-    assert table.get_string(sortby=sort) in result.stdout
+    assert (
+        table.get_string(sortby=sort, sort_key=lambda x: str(x))
+        in result.stdout
+    )
 
 
 @patch("todocli.cli.get_todoer")
@@ -764,7 +767,8 @@ def test_list_sortby_invalid_option(mock_get_todoer, todo_manager):
     )
     assert result.exit_code == 1
     assert (
-        "'hello' is invalid try:Description,Priority,Due,Done" in result.stdout
+        "'hello' is invalid try:ID,Description,Priority,Due,Done"
+        in result.stdout
     )
 
 
@@ -800,3 +804,61 @@ def test_get_toder_wo_init_db_path_non_exisitant(mock_get_db_path, tmpdir):
             'DB path does not exist. Please, run "todocli init"'
             in fake_out.getvalue()
         )
+
+
+@patch("todocli.cli.get_todoer")
+@pytest.mark.parametrize(
+    "dt_formats",
+    ["2020-11", "2020-11-002", "20-11-02", "2020/11/02", "2020.11.02"],
+)
+@pytest.mark.parametrize(
+    "todo_task,todo_priority,todo_due_date_str,return_todo",
+    list(generate_todos(1)),
+)
+def test_add_todo_w_invalid_due(
+    mock_get_todoer,
+    dt_formats,
+    todo_task,
+    todo_priority,
+    todo_due_date_str,
+    return_todo,
+    todo_manager,
+):
+    mock_get_todoer.return_value = todo_manager
+    result = runner.invoke(
+        cli.app,
+        [
+            "add",
+            todo_task,
+            "--priority",
+            todo_priority,
+            "--due",
+            dt_formats,
+        ],
+    )
+    assert (
+        f"Error: Invalid value for '--due': invalid datetime format: {dt_formats}. (choose from %Y-%m-%d)"  # noqa: E501
+        in result.stdout
+    )
+    assert result.exit_code == 2
+
+
+@patch("todocli.cli.get_todoer")
+def test_list_sortby_due(mock_get_todoer, todo_manager):
+    mock_get_todoer.return_value = todo_manager
+    table = PrettyTable()
+    table.field_names = ["ID", "Description", "Priority", "Due", "Done"]
+    for id, todo in enumerate(generate_todos(10), start=1):
+        todo_task, todo_priority, todo_due_date_str, return_todo = todo
+        if id % 2 == 0:
+            todo_due_date_str = None
+        todo_manager.add(todo_task, todo_priority, todo_due_date_str)
+        table.add_row([id, todo_task, todo_priority, todo_due_date_str, False])
+    result = runner.invoke(
+        cli.app,
+        ["list", "--sort-by", "Due"],
+    )
+    assert (
+        table.get_string(sortby="Due", sort_key=lambda x: str(x))
+        in result.stdout
+    )
